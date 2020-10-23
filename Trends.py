@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 
 '=============================================================='
 
-time_stamp = pd.to_datetime('2020-10-21')
+time_stamp = pd.to_datetime('2020-10-31')
 
 userid = 'gerard.mazi@gmail.com'
 password = ''
@@ -46,7 +46,6 @@ trend_temp = pd.DataFrame(
     {
         'Date':     [],
         'Comp':     [],
-        'Follow':   [],
         'FTE':      [],
         'Jobs':     [],
         'Role':     [],
@@ -62,42 +61,64 @@ for c in range(len(comps)):
     t_comp = driver.find_element_by_xpath(
         '//*[@class="org-top-card-summary__title t-24 t-black truncate"]'
     ).text
-
-    # LinkedIn followers
-    t_info = re.findall(
-        r'\d+(?:,\d+)?',
-        driver.find_element_by_xpath(
-            '//*[@class="inline-block"]'
-        ).text
-    )
+    time.sleep(1)
 
     # Navigate to jobs page
-    driver.find_element_by_xpath(
-        '//*[@class="org-page-navigation__items "]/li[4]'
-    ).click()
-    time.sleep(3)
-
-    # Get open roles
     try:
-        t_jobs = re.findall(
-            r'\d+(?:,\d+)?',
-            driver.find_element_by_xpath(
-                '//*[@class="org-jobs-job-search-form-module__headline"]'
-            ).text
-        )[1]
-    except:
-        t_jobs = re.findall(
-            r'\d+(?:,\d+)?',
-            driver.find_element_by_xpath(
-                '//*[@class="org-jobs-job-search-form-module__headline"]'
-            ).text
-        )
+        driver.find_element_by_xpath(
+            '//*[@class="org-page-navigation__items "]/li[4]'
+        ).click()
+        time.sleep(3)
 
-    # Navigate to people
-    driver.find_element_by_xpath(
-        '//*[@class="org-page-navigation__items "]/li[5]'
-    ).click()
-    time.sleep(3)
+        # Get open roles
+        try:
+            t_jobs = re.findall(
+                r'\d+(?:,\d+)?',
+                driver.find_element_by_xpath(
+                    '//*[@class="org-jobs-job-search-form-module__headline"]'
+                ).text
+            )[1]
+        except:
+            t_jobs = re.findall(
+                r'\d+(?:,\d+)?',
+                driver.find_element_by_xpath(
+                    '//*[@class="org-jobs-job-search-form-module__headline"]'
+                ).text
+            )
+
+        # Navigate to people
+        driver.find_element_by_xpath(
+            '//*[@class="org-page-navigation__items "]/li[5]'
+        ).click()
+        time.sleep(3)
+
+    except:
+        driver.find_element_by_xpath(
+            '//*[@class="org-page-navigation__items "]/li[3]'
+        ).click()
+        time.sleep(3)
+
+        # Get open roles
+        try:
+            t_jobs = re.findall(
+                r'\d+(?:,\d+)?',
+                driver.find_element_by_xpath(
+                    '//*[@class="org-jobs-job-search-form-module__headline"]'
+                ).text
+            )[1]
+        except:
+            t_jobs = re.findall(
+                r'\d+(?:,\d+)?',
+                driver.find_element_by_xpath(
+                    '//*[@class="org-jobs-job-search-form-module__headline"]'
+                ).text
+            )
+
+            # Navigate to people
+        driver.find_element_by_xpath(
+            '//*[@class="org-page-navigation__items "]/li[4]'
+        ).click()
+        time.sleep(3)
 
     # Get full time employees
     t_fte = re.findall(
@@ -136,21 +157,24 @@ for c in range(len(comps)):
         )
     time.sleep(2)
 
-    dist = pd.DataFrame(
+    dist_temp = pd.DataFrame(
         {
             'Role':     t_role,
             'Count':    t_count
         }
     )
 
-    temp = pd.DataFrame(
+    main_temp = pd.DataFrame(
         {
             'Date':     time_stamp._short_repr,
             'Comp':     t_comp,
-            'Follow':   t_info,
             'FTE':      t_fte,
             'Jobs':     t_jobs
         }
     )
 
-    trend_temp = pd.concat([temp, dist], axis=1).ffill()
+    comb_temp = pd.concat([main_temp, dist_temp], axis=1).ffill()
+
+    trend_temp = pd.concat([trend_temp, comb_temp], ignore_index=True)
+
+pd.to_pickle(trend_temp, 'trend.pkl')
