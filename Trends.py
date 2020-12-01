@@ -16,11 +16,11 @@ import time
 import re
 import matplotlib.pyplot as plt
 
-#roles = pd.read_pickle('store_roles.pkl')
+trend = pd.read_pickle('trend.pkl')
 
 '=============================================================='
 
-time_stamp = pd.to_datetime('2020-10-31')
+time_stamp = pd.to_datetime('2020-11-30')
 
 userid = 'gerard.mazi@gmail.com'
 password = ''
@@ -59,7 +59,7 @@ for c in range(len(comps)):
 
     # Company name
     t_comp = driver.find_element_by_xpath(
-        '//*[@class="org-top-card-summary__title t-24 t-black truncate"]'
+        '//*[@class="org-top-card-summary__title t-24 t-black  truncate"]'
     ).text
     time.sleep(1)
 
@@ -177,4 +177,6 @@ for c in range(len(comps)):
 
     trend_temp = pd.concat([trend_temp, comb_temp], ignore_index=True)
 
-pd.to_pickle(trend_temp, 'trend.pkl')
+trend = pd.concat([trend, trend_temp], ignore_index=True)
+
+pd.to_pickle(trend, 'trend.pkl')
