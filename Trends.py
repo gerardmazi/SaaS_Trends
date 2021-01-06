@@ -20,7 +20,7 @@ trend = pd.read_pickle('trend.pkl')
 
 '=============================================================='
 
-time_stamp = pd.to_datetime('2020-11-30')
+time_stamp = pd.to_datetime('2020-12-31')
 
 userid = 'gerard.mazi@gmail.com'
 password = ''
@@ -136,7 +136,7 @@ for c in range(len(comps)):
 
     # Show more drop down
     driver.find_element_by_xpath(
-        '//*[@data-control-name="people_toggle_see_more_insights_button"]'
+        '//*[@class="org-people__show-more-button t-16 t-16--open t-black--light t-bold"]'
     ).click()
     time.sleep(3)
 
